@@ -5,4 +5,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.myp.mapper.BoardMapper">
 
+  <insert id="create">
+ insert into tbl_board (title, content, writer) 
+ values(#{title},#{content}, #{writer})
+ </insert>
+ 
+  <select id="read" resultType="com.myp.domain.BoardVO">
+ select 
+   bno, title, content, writer, regdate, viewcnt 
+ from 
+   tbl_board 
+ where bno = #{bno}
+ </select>
+ 
+  <update id="update">
+ update tbl_board set title =#{title}, content =#{content} 
+ where bno = #{bno}
+ </update>
+
+ <delete id="delete">
+ delete from tbl_board where bno = #{bno}
+ </delete>
+ 
+  <select id="listAll" resultType="com.myp.domain.BoardVO">
+ <![CDATA[ 
+ select 
+   bno, title, content, writer, regdate, viewcnt 
+ from 
+   tbl_board 
+ where bno > 0 
+ order by bno desc, regdate desc
+ ]]>  
+ </select> 
  </mapper>
