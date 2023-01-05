@@ -19,8 +19,8 @@
 			value="com.mysql.jdbc.Driver"></property>
 		<property name="url"
 			value="jdbc:mysql://localhost:3306/opix10?characterEncoding=utf8&amp;useSSL=false"></property>
-		<property name="username" value="ydg"></property>
-		<property name="password" value="root"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="ehdrms63!"></property>
 </bean>	
 
 <bean id="sqlSessionFactory"
