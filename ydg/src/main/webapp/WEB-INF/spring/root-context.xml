@@ -12,31 +12,45 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 	
 <!-- Root Context: defines shared resources visible to all other web components -->
-<bean id="dataSource"
 
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-			value="com.mysql.jdbc.Driver"></property>
-		<property name="url"
-			value="jdbc:mysql://localhost:3306/opix10?characterEncoding=utf8&amp;useSSL=false"></property>
-		<property name="username" value="root"></property>
-		<property name="password" value="ehdrms63!"></property>
-</bean>	
+<bean id="hikariconfig" class="com.zaxxer.hikari.HikariConfig">
+	<!-- ds 객체에 주입하기 위해 setter()를 통한 주입 - HikariDataSource의 필드 초기화 -->
+	<property name = "driverClassName" 
+		value="oracle.jdbc.OracleDriver"/>
+	<property name=	"jdbcUrl"
+		value="jdbc:oracle:thin:@192.168.219.102:1521:xe"/>
+	<property name = "username" value = "NEWLEC"/>
+	<property name = "password" value="ehdrms63!"/>
 
-<bean id="sqlSessionFactory"
-		class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="configLocation"
-			value="classpath:/mybatis-config.xml"></property>
-		<property name="mapperLocations"
-			value="classpath:mappers/**/*Mapper.xml"></property>
+</bean>
+
+<!-- HikariDataSource 객체에 빈 datasource 등록 - DataSource 역할 -->
+<bean id ="ds" class = "com.zaxxer.hikari.HikariDataSource">
+	<!-- ds 객체에 hikariconfig 객체 의존성 주입 - 생성자를 통한 의존성 주입 -->
+	<constructor-arg ref="hikariconfig"/>
+</bean>
+
+<!-- Spring-JDBC 쿼리문 수행객체 / hikaricp에서 호환가능 -->
+<!-- [JdbcTemplate] 객체 jdbcTemplate 빈 등록 -->
+<bean id="jdbcTemplate" class = "org.springframework.jdbc.core.JdbcTemplate">
+	<!-- jdbcTemplate에 dataSource객체 의존성 주입 - setter()를 통한 의존성 주입 -->
+	<property name="dataSource" ref= "ds"/>
+</bean>
+
+<!-- MyBatis 핵심객체 sqlsessionFactory 빈 등록 / 데이터소스 주입하기 -->
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	<property name="dataSource" ref="ds"/>
+	<property name="configLocation" value="classpath:/mybatis-config.xml"/>
+	<property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
 	</bean>
 
-	<bean id="sqlSession"
-		class="org.mybatis.spring.SqlSessionTemplate"
-		destroy-method="clearCache">
-		<constructor-arg name="sqlSessionFactory"
-			ref="sqlSessionFactory"></constructor-arg>
-	</bean>
+<!-- mybatis 쿼리문 수행객체를 설정 / SqlSessionTemplate방식 -->
+<bean id="sqlSession" class = "org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+	<constructor-arg name="sqlSessionFactory" ref = "sqlSessionFactory"/>
+</bean>
+
+<!-- mapper의 인터페이스를 스캔하는 설정 / MapperInterface 방식-->
+<mybatis-spring:scan base-package = "com.spring.mvc.board.repository"/>
+
 		
 </beans>
